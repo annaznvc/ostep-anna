@@ -1,0 +1,146 @@
+#1
+
+ ./mlfq.py -j 2 -n 2 -m 10 -M 0 -s 1 -c 
+ 2 jobs, 2 queues, max. 10 ticks pro job, keine IO operatoionen, seed 1
+
+
+
+#2
+
+Example 1: Figure 8.2
+    A Single Long-Running Job
+    Let’s look at some examples. First, we’ll look at what happens when there
+    has been a long running job in the system, with a time slice of 10 ms (and
+    with the allotment set equal to the time slice). Figure 8.2 shows what
+    happens to this job over time in a three-queue scheduler.
+    As you can see in the example, the job enters at the highest priority
+    (Q2). After a single time slice of 10 ms, the scheduler reduces the job’s
+    priority by one, and thus the job is on Q1. After running at Q1 for a time
+    slice, the job is finally lowered to the lowest priority in the system (Q0),
+    where it remains. Pretty simple, no?
+
+
+./mlfq.py -l 0,200,0 -q 10 -n 3 -c
+
+
+    -> 0 start, 200 runtime, 0 io request frequency = -l 0,200,0
+    -> time slice 10ms = -q 10
+    -> three queues = -n 3
+
+
+Example 2: Figur 8.3 links
+    Along Came A Short Job
+    Now let’s look at a more complicated example, and hopefully see how
+    MLFQ tries to approximate SJF. In this example, there are two jobs: A,
+    which is a long-running CPU-intensive job, and B, which is a short-running
+    interactive job. Assume A has been running for some time, and then B arrives. What will happen? Will MLFQ approximate SJF for B?
+    Figure 8.3 on page 5 (left) plots the results of this scenario. Job A
+    (shown in black) is running along in the lowest-priority queue (as would
+    any long-running CPU-intensive jobs); B (shown in gray) arrives at time
+    T = 100, and thus is inserted into the highest queue; as its run-time is
+    short (only 20 ms), B completes before reaching the bottom queue, in two
+    time slices; then A resumes running (at low priority).
+    From this example, you can hopefully understand one of the major
+    goals of the algorithm: because it doesn’t know whether a job will be a
+    short job or a long-running job, it first assumes it might be a short job, thus
+    giving the job high priority. If it actually is a short job, it will run quickly
+    and complete; if it is not a short job, it will slowly move down the queues,
+    and thus soon prove itself to be a long-running more batch-like process.
+    In this manner, MLFQ approximates SJF.
+
+
+./mlfq.py -l 0,200,0:100,20,0 -n 3 -q 10 -c
+
+    -> A arrives at 0, runs for 200
+    -> B arrives at 100, runs for 20
+    -> three queues
+
+
+Example 3: Figur 8.3 rechts
+    What About I/O?
+    Let’s now look at an example with some I/O. As Rule 4b states above, if a
+    process gives up the processor before using up its allotment, we keep it at
+    the same priority level. The intent of this rule is simple: if an interactive
+    job, for example, is doing a lot of I/O (say by waiting for user input from
+    the keyboard or mouse), it will relinquish the CPU before its allotment is
+    complete; in such case, we don’t wish to penalize the job and thus simply
+    keep it at the same level.
+    Figure 8.3 (right) shows an example of how this works, with an interactive job B (shown in gray) that needs the CPU only for 1 ms before
+    performing an I/O competing for the CPU with a long-running batch job
+    A (shown in black). The MLFQ approach keeps B at the highest priority because B keeps releasing the CPU; if B is an interactive job, MLFQ
+    further achieves its goal of running interactive jobs quickly.
+
+./mlfq.py -n 3 -q 10 -l 0,175,0:50,25,1 -S -c -i 1
+-> Job B hat 25 striche in der Grafik, 1 strich sind 1 ms, d.h 25 ms wird die cpu besetzt von Job b
+-> Job A ist dann 200-25 in der Laufzeit her
+-> -S weil wir die Priorität nciht senken nach IO
+
+
+Example 4: Figur 8.4 links ohne priority boost
+
+ On the left,
+ there is no priority boost, and thus the long-running job gets starved once
+ the two short jobs arrive
+
+./mlfq.py -n 3 -q 10 -l 0,120,0:100,50,1:100,50,1 -S -c
+
+Example 5: Fgur 8.5 rechts???????
+
+    on the right, there is a priority boost every 100ms 
+
+./mlfq.py -l 0,150,0:100,50,5:100,50,5 -q 10 -n 3 -S -B 100 -c
+
+Example 6: Without gaming tolerance
+
+./mlfq.py -n 3 -q 10 -i 1 -S -l 0,220,0:100,80,9 -c
+-> 220 job 0
+-> 80 job 1, alle 9 ms gibts nen io
+
+Example 7: with gaming tolerance
+./mlfq.py -n 3 -q 10 -i 1 -l 0,220,0:100,80,9 -c
+-> ohne s rutscht es trotz io in die niedrigere priority queue
+
+
+Example 8: Lower priority, longer quanta
+./mlfq.py -n 3 -a 2 -Q 10,20,40 -l 0,140,0:0,140,0 -c
+
+20+40+80 = 140
+
+#3
+
+How would you configure the scheduler parameters to behave just like a round-robin scheduler?
+
+    by setting the -n flag to 1, so that the scheduler would have only 1 Queue.
+    -> keine queue das heisst wir sitzen unser zeitquantum eif ab
+
+
+
+#4
+./mlfq.py -l 0,1000,0:300,1000,99 -q 100 -n 3 -i 1 -S -c
+
+Job A läuft 1000
+Job B fängt bei 300 an und ab da läuft das programm. der timeslice ist 100 ms, aber wir machen alle 99 ms ein io und bliebne hoch in der queue
+
+also ist der knackpunkt, dass der timeslice 100 sekunden dauert, aber wir nach 99 sekunden dirket ein io auslösen, um oben in der priority zu bleiben?
+
+
+
+
+
+#6
+
+
+$ ./mlfq.py -n 3 -q 10 -l 0,200,0:0,200,1:0,200,1 -i 1 -S -B 200 -c
+
+Anteil=Quantum/Boostintervall = 10/200 = 0.05
+
+wir kommen auf 30 von 600 ticks, das sind 0.5
+
+
+#7
+
+./mlfq.py -l 0,50,5:0,50,5:0,50,5 -q 10 -n 3 -i 5 -S -c
+./mlfq.py -l 0,50,5:0,50,5:0,50,5 -q 10 -n 3 -i 5 -S -I -c
+If -I is not added, the three tasks are executed alternately. If -I is added, the first and second tasks are executed alternately, and the third task has no chance to be executed.
+
+

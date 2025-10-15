@@ -6,7 +6,7 @@
 
 int main(int argc, char *argv[]){
 
-    int fd = open("five2file.txt", O_CREAT|O_WRONLY|O_TRUNC,S_IRWXU);
+    int fd = open("five2file.txt", O_CREAT|O_WRONLY|O_TRUNC|S_IRWXU);
 
     if (fd == -1) {
         fprintf(stderr, "open failed\n");

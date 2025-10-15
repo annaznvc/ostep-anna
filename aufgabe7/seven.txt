@@ -1,0 +1,5 @@
+## 1. Compute the response time and turnaround time when running
+three jobs of length 200 with the SJF and FIFO schedulers.
+
+    SJF (Shortest Job First)
+    
