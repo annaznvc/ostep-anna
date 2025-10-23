@@ -84,7 +84,7 @@ Example 4: Figur 8.4 links ohne priority boost
 
 ./mlfq.py -n 3 -q 10 -l 0,120,0:100,50,1:100,50,1 -S -c
 
-Example 5: Fgur 8.5 rechts???????
+Example 5: Fgur 8.4 rechts???????
 
     on the right, there is a priority boost every 100ms 
 
@@ -121,13 +121,13 @@ How would you configure the scheduler parameters to behave just like a round-rob
 Job A läuft 1000
 Job B fängt bei 300 an und ab da läuft das programm. der timeslice ist 100 ms, aber wir machen alle 99 ms ein io und bliebne hoch in der queue
 
-also ist der knackpunkt, dass der timeslice 100 sekunden dauert, aber wir nach 99 sekunden dirket ein io auslösen, um oben in der priority zu bleiben?
+also ist der knackpunkt, dass der timeslice 100 sekunden dauert, aber wir nach 99 sekunden dirket ein io auslösen, um oben in der priority zu bleiben
 
 
 
 
 
-#6
+#5
 
 
 $ ./mlfq.py -n 3 -q 10 -l 0,200,0:0,200,1:0,200,1 -i 1 -S -B 200 -c
@@ -137,10 +137,11 @@ Anteil=Quantum/Boostintervall = 10/200 = 0.05
 wir kommen auf 30 von 600 ticks, das sind 0.5
 
 
-#7
+#6
 
 ./mlfq.py -l 0,50,5:0,50,5:0,50,5 -q 10 -n 3 -i 5 -S -c
 ./mlfq.py -l 0,50,5:0,50,5:0,50,5 -q 10 -n 3 -i 5 -S -I -c
+
 If -I is not added, the three tasks are executed alternately. If -I is added, the first and second tasks are executed alternately, and the third task has no chance to be executed.
 
 

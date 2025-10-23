@@ -1,0 +1,161 @@
+
+
+
+5. Let’s try one more tool, known as pmap. Spend some time, and read
+the pmap manual page in detail
+
+    pmap zeigt, wie der virtuelle speicher eines laufenden Prozesses aufgeteilt ist.
+    Man gibt ihm die PID und es listet alle Speicherbereiche auf, die dieser Prozess nutzt
+    -> z.B Code, Data, Heap, Stack etc.
+
+
+6. To use pmap, you have to know the process ID of the process you’re
+interested in. Thus, first run ps auxw to see a list of all processes;
+then, pick an interesting one, such as a browser. You can also use
+your memory-user program in this case (indeed, you can even
+have that program call getpid() and print out its PID for your
+convenience).
+
+    pocketlab@99e8121726f4:~$ pmap -x 19308
+    19308:   ./memory-user 1
+    Address           Kbytes     RSS   Dirty Mode  Mapping
+    000059553d4ae000       4       4       0 r---- memory-user
+    000059553d4af000       4       4       0 r-x-- memory-user
+    000059553d4b0000       4       4       0 r---- memory-user
+    000059553d4b1000       4       4       4 r---- memory-user
+    000059553d4b2000       4       4       4 rw--- memory-user
+    000059557bd63000     132       4       4 rw---   [ anon ]
+    00007642cab57000    1040    1036    1036 rw---   [ anon ]
+    00007642cac5b000     160     160       0 r---- libc.so.6
+    00007642cac83000    1568     928       0 r-x-- libc.so.6
+    00007642cae0b000     316     148       0 r---- libc.so.6
+    00007642cae5a000      16      16      16 r---- libc.so.6
+    00007642cae5e000       8       8       8 rw--- libc.so.6
+    00007642cae60000      52      16      16 rw---   [ anon ]
+    00007642cae72000       8       4       4 rw---   [ anon ]
+    00007642cae74000       4       4       0 r---- ld-linux-x86-64.so.2
+    00007642cae75000     172     172       0 r-x-- ld-linux-x86-64.so.2
+    00007642caea0000      40      40       0 r---- ld-linux-x86-64.so.2
+    00007642caeaa000       8       8       8 r---- ld-linux-x86-64.so.2
+    00007642caeac000       8       8       8 rw--- ld-linux-x86-64.so.2
+    00007ffd1f896000     132      12      12 rw---   [ stack ]
+    00007ffd1f9f9000      16       0       0 r----   [ anon ]
+    00007ffd1f9fd000       8       4       0 r-x--   [ anon ]
+    ---------------- ------- ------- -------
+    total kB            3708    2588    1120
+
+
+
+
+#7
+
+pocketlab@99e8121726f4:~$ pmap 20500
+20500:   ./memory-user 1
+000060735605b000      4K r---- memory-user
+000060735605c000      4K r-x-- memory-user
+000060735605d000      4K r---- memory-user
+000060735605e000      4K r---- memory-user
+000060735605f000      4K rw--- memory-user
+000060739314b000    132K rw---   [ anon ]
+000070ca16ce1000   1040K rw---   [ anon ]
+000070ca16de5000    160K r---- libc.so.6
+000070ca16e0d000   1568K r-x-- libc.so.6
+000070ca16f95000    316K r---- libc.so.6
+000070ca16fe4000     16K r---- libc.so.6
+000070ca16fe8000      8K rw--- libc.so.6
+000070ca16fea000     52K rw---   [ anon ]
+000070ca16ffc000      8K rw---   [ anon ]
+000070ca16ffe000      4K r---- ld-linux-x86-64.so.2
+000070ca16fff000    172K r-x-- ld-linux-x86-64.so.2
+000070ca1702a000     40K r---- ld-linux-x86-64.so.2
+000070ca17034000      8K r---- ld-linux-x86-64.so.2
+000070ca17036000      8K rw--- ld-linux-x86-64.so.2
+00007fff8bdde000    132K rw---   [ stack ]
+00007fff8bf82000     16K r----   [ anon ]
+00007fff8bf86000      8K r-x--   [ anon ]
+ total             3708K
+
+
+-> memoryuser: ausführbare code, globale variablen, konstanten etc.
+-> anon: heap und anonymer speicher: malloc etc.
+-> libc.so.6: standardbib
+-> ld-linux-x....: dynamic linker
+->stack: prozess-stack: lokale variablen etc.
+
+-> insgesamt 3,7 mb an virtuellem speicher belegt
+
+
+
+#8
+
+ Finally, let’s run pmap on your memory-user program, with different amounts of used memory. What do you see here? Does the
+output from pmap match your expectations?
+
+
+
+./memory-user 1
+
+20581:   ./memory-user 1
+00005fd6833f4000      4K r---- memory-user
+00005fd6833f5000      4K r-x-- memory-user
+00005fd6833f6000      4K r---- memory-user
+00005fd6833f7000      4K r---- memory-user
+00005fd6833f8000      4K rw--- memory-user
+00005fd6a82c0000    132K rw---   [ anon ]
+000077bb94dc9000   1040K rw---   [ anon ]
+000077bb94ecd000    160K r---- libc.so.6
+000077bb94ef5000   1568K r-x-- libc.so.6
+000077bb9507d000    316K r---- libc.so.6
+000077bb950cc000     16K r---- libc.so.6
+000077bb950d0000      8K rw--- libc.so.6
+000077bb950d2000     52K rw---   [ anon ]
+000077bb950e4000      8K rw---   [ anon ]
+000077bb950e6000      4K r---- ld-linux-x86-64.so.2
+000077bb950e7000    172K r-x-- ld-linux-x86-64.so.2
+000077bb95112000     40K r---- ld-linux-x86-64.so.2
+000077bb9511c000      8K r---- ld-linux-x86-64.so.2
+000077bb9511e000      8K rw--- ld-linux-x86-64.so.2
+00007fffc1799000    132K rw---   [ stack ]
+00007fffc17cf000     16K r----   [ anon ]
+00007fffc17d3000      8K r-x--   [ anon ]
+ total             3708K
+
+
+
+./memory-user 10
+
+20616:   ./memory-user 10
+0000621b04618000      4K r---- memory-user
+0000621b04619000      4K r-x-- memory-user
+0000621b0461a000      4K r---- memory-user
+0000621b0461b000      4K r---- memory-user
+0000621b0461c000      4K rw--- memory-user
+0000621b2ede5000    132K rw---   [ anon ]
+00007ebaf98d6000  10256K rw---   [ anon ]
+00007ebafa2da000    160K r---- libc.so.6
+00007ebafa302000   1568K r-x-- libc.so.6
+00007ebafa48a000    316K r---- libc.so.6
+00007ebafa4d9000     16K r---- libc.so.6
+00007ebafa4dd000      8K rw--- libc.so.6
+00007ebafa4df000     52K rw---   [ anon ]
+00007ebafa4f1000      8K rw---   [ anon ]
+00007ebafa4f3000      4K r---- ld-linux-x86-64.so.2
+00007ebafa4f4000    172K r-x-- ld-linux-x86-64.so.2
+00007ebafa51f000     40K r---- ld-linux-x86-64.so.2
+00007ebafa529000      8K r---- ld-linux-x86-64.so.2
+00007ebafa52b000      8K rw--- ld-linux-x86-64.so.2
+00007ffd31877000    132K rw---   [ stack ]
+00007ffd31993000     16K r----   [ anon ]
+00007ffd31997000      8K r-x--   [ anon ]
+ total            12924K
+
+
+
+ Vergleich deiner beiden Läufe
+Lauf	Argument	größte [ anon ]-Region	total
+1️	1 MB	1040K rw--- [ anon ]	3708 K
+2	10 MB	10256K rw--- [ anon ]	12924 K
+
+anon ist der anonyme, danmisch allokierte speicher des prozesses also das was malloc zurückgibt
+programm belegt mehr physischen speicher, total wert steigt deutlich
+programm benutzt den speicher den es allokiert

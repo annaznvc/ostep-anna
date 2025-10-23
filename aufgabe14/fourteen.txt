@@ -1,0 +1,113 @@
+#1
+Segmentation fault -> Programm greift auf Speicher zu, der nicht existiert
+
+
+#2 Next, compile this program with symbol information included (with
+the -g flag). Doing so let’s put more information into the executable, enabling the debugger to access more useful information
+about variable names and the like. Run the program under the debugger by typing gdb null and then, once gdb is running, typing
+run. What does gdb show you?
+
+    gcc -g -o null null.c
+    gdb null
+    run
+
+
+        Program received signal SIGSEGV, Segmentation fault.
+        0x000061d60c53e162 in main (argc=1, args=0x7fff975ed158) at null.c:8
+        8           printf("%d\n", *p);
+
+
+
+#3 Finally, use the valgrind tool on this program. We’ll use memcheck
+that is a part of valgrind to analyze what happens. Run this by
+typing in the following: valgrind --leak-check=yes null.
+What happens when you run this? Can you interpret the output
+from the tool?
+
+
+    valgrind --leak-check=yes ./null
+
+
+        ==19670== Invalid read of size 4
+        ==19670==    at 0x109162: main (null.c:8)
+        ==19670==  Address 0x0 is not stack'd, malloc'd or (recently) free'd
+
+        -> kein memory leak (also kein speicher reservieren ohne ihn freizugeben)
+
+
+4. Write a simple program that allocates memory using malloc() but
+forgets to free it before exiting. What happens when this program
+runs? Can you use gdb to find any problems with it? How about
+valgrind (again with the --leak-check=yes flag)?
+
+    valgrind:
+    ==19793==
+    ==19793== LEAK SUMMARY:
+    ==19793==    definitely lost: 4 bytes in 1 blocks
+    ==19793==    indirectly lost: 0 bytes in 0 blocks
+    ==19793==      possibly lost: 0 bytes in 0 blocks
+    ==19793==    still reachable: 0 bytes in 0 blocks
+    ==19793==         suppressed: 0 bytes in 0 blocks
+    ==19793==
+
+        -> memory leak
+
+    gdb:
+
+    [Inferior 1 (process 19810) exited normally]
+
+        ->keine fehler
+
+
+5. Write a program that creates an array of integers called data of size
+100 using malloc; then, set data[100] to zero. What happens
+when you run this program? What happens when you run this
+program using valgrind? Is the program correct?
+
+
+
+    ==19901== Invalid write of size 4
+    ==19901==    at 0x109178: main (in /home/pocketlab/ostep-anna/aufgabe14/fourteen5)
+    ==19901==  Address 0x4a741d0 is 0 bytes after a block of size 400 alloc'd
+    ==19901==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+    ==19901==    by 0x10916F: main (in /home/pocketlab/ostep-anna/aufgabe14/fourteen5)
+
+        -> data[100] überschreitet den Index.
+
+
+
+6. Create a program that allocates an array of integers (as above), frees
+them, and then tries to print the value of one of the elements of
+the array. Does the program run? What happens when you use
+valgrind on it?
+
+
+    ==20031== Invalid read of size 4
+    ==20031==    at 0x10918A: main (in /home/pocketlab/ostep-anna/aufgabe14/fourteen6)
+    ==20031==  Address 0x4a74040 is 0 bytes inside a block of size 400 free'd
+    ==20031==    at 0x484988F: free (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+    ==20031==    by 0x109185: main (in /home/pocketlab/ostep-anna/aufgabe14/fourteen6)
+    ==20031==  Block was alloc'd at
+    ==20031==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+    ==20031==    by 0x109178: main (in /home/pocketlab/ostep-anna/aufgabe14/fourteen6)
+    ==20031==
+    The value of data[0] is 0
+
+        -> Invalid read of 4, weil wir daten abrufen nachdem wir speicher freigegeben haben
+
+
+
+7. Now pass a funny value to free (e.g., a pointer in the middle of the
+array you allocated above). What happens? Do you need tools to
+find this type of problem?
+
+
+    pocketlab@99e8121726f4:~/ostep-anna/aufgabe14$ ./fourteen7
+    free(): invalid pointer
+    Aborted (core dumped)
+
+
+8. Try out some of the other interfaces to memory allocation. For example, create a simple vector-like data structure and related routines that use realloc() to manage the vector. Use an array to
+store the vectors elements; when a user adds an entry to the vector, use realloc() to allocate more space for it. How well does
+such a vector perform? How does it compare to a linked list? Use
+valgrind to help you find bugs.
