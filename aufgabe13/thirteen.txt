@@ -159,3 +159,7 @@ Lauf	Argument	größte [ anon ]-Region	total
 anon ist der anonyme, danmisch allokierte speicher des prozesses also das was malloc zurückgibt
 programm belegt mehr physischen speicher, total wert steigt deutlich
 programm benutzt den speicher den es allokiert
+
+
+
+

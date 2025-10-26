@@ -6,7 +6,6 @@
 int main(int argc, char *argv[]){
 
 
-
     if (argc > 2 || argc == 1){
         fprintf(stderr, "anzahl argumente falsch\n");
         exit(1);
