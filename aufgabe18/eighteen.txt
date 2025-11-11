@@ -1,0 +1,18 @@
+1. Before doing any translations, let’s use the simulator to study how
+linear page tables change size given different parameters. Compute
+the size of linear page tables as different parameters change. Some
+suggested inputs are below; by using the -v flag, you can see
+how many page-table entries are filled. First, to understand how
+linear page table size changes as the address space grows, run with
+these flags:
+-P 1k -a 1m -p 512m -v -n 0
+-P 1k -a 2m -p 512m -v -n 0
+-P 1k -a 4m -p 512m -v -n 0
+Then, to understand how linear page table size changes as page size
+grows:
+-P 1k -a 1m -p 512m -v -n 0
+-P 2k -a 1m -p 512m -v -n 0
+-P 4k -a 1m -p 512m -v -n 0
+Before running any of these, try to think about the expected trends.
+How should page-table size change as the address space 
+
