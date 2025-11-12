@@ -15,4 +15,51 @@ grows:
 -P 4k -a 1m -p 512m -v -n 0
 Before running any of these, try to think about the expected trends.
 How should page-table size change as the address space 
+grows? Why not use big pages in general?
+    Wir untersuchen, wie groß eine page table wird, wenn wir sie im virtuellen adressraum vergrößern
+        -P 1k: Page size: 1 KB
+        -a 1m,2m,4m: Adress space sie, wie groß der virtuelle adressraum des prozesses ist
+        -p 512m: Physical memory size
+        -v Verbose, zeigt zusätzliche INfos wie z.B wie viele Einträge in der Page Table erzeugt wurden
+        -n 0 Keine Speicherzugriffe simulieren, nur Aufbau der Page table anzeigen
+
+    Was passiert?
+        Der Simulator teilt den virtuellen Adressraum -a in Seiten der Grße -P
+        Für jede virtuelle Page wird ein Page Table Entry angelegt
+        Jeder PTE ist standardmäßig 4 bytes groß
+
+    Beobachtung:
+        Verdoppelt sich der Adressraum, verdoppelt sich auch die Page Table.
+
+    
+
+    Wir untersuchen, wie groß eine page table wird, wenn wir die Seiten vergrößern:
+        blabla
+
+    Was passiert?
+        Der Simulator erzeugt größere Pages. 
+        Je größer eine Page, desto mehr Speicherbereiche kann sie abdecken
+        Umso weniger Pages brauchen wir und umso kleiner wird die Pagetable
+
+    Beobachtung:
+        Bei Verdoppelung die größe, wird die Page Table nur halb so groß
+
+
+    Why not use big pages in general?
+        -> interne Fragmentierung: Wir könnten einem Prozess eine Page zuweisen, die zu groß ist, somit Speicher ungenutzt innerhalb der Page
+
+
+
+2. Now let’s do some translations. Start with some small examples,
+and change the number of pages that are allocated to the address
+space with the -u flag. For example:
+-P 1k -a 16k -p 32k -v -u 0
+-P 1k -a 16k -p 32k -v -u 25
+-P 1k -a 16k -p 32k -v -u 50
+-P 1k -a 16k -p 32k -v -u 75
+-P 1k -a 16k -p 32k -v -u 100
+What happens as you increase the percentage of pages that are allocated in each address space?
+
+
+
 
