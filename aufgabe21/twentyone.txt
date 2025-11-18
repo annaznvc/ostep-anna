@@ -56,6 +56,22 @@ SI hängt hingegen davon ab, ob Prozesse zufällig eine ausgelagerte Page brauch
     id nimmt etwas ab idle, cpu ist häufiger beschäftgit
 
 
-5. Now let’s examine performance. Pick an input for mem that comfortably fits in memory (say 4000 if the amount of memory on the system is 8 GB). How long does loop 0 take (and subsequent loops 1, 2, etc.)? Now pick a size comfortably beyond the size of memory (say 12000 again assuming 8 GB of memory). How long do the loops take here? How do the bandwidth numbers compare? How different is performance when constantly swapping versus fitting everything comfortably in memory? Can you make a graph, with the size of memory used by mem on the x-axis, and the bandwidth of accessing said memory on the y-axis? Finally, how does the performance of the first loop compare to that of subsequent loops, for both the case where everything fits in memory and where it doesn’t?
+5.Now let’s examine performance. Pick an input for mem that comfortably fits in memory (say 4000 if the amount of memory on the system is 8 GB). How long does loop 0 take (and subsequent loops 1, 2, etc.)? Now pick a size comfortably beyond the size of memory (say 12000 again assuming 8 GB of memory). How long do the loops take here? How do the bandwidth numbers compare? How different is performance when constantly swapping versus fitting everything comfortably in memory? Can you make a graph, with the size of memory used by mem on the x-axis, and the bandwidth of accessing said memory on the y-axis? Finally, how does the performance of the first loop compare to that of subsequent loops, for both the case where everything fits in memory and where it doesn’t?
 
+    Die Loops sind sehr schnell bei kleinem Parameter
+    Mit einem größeren parameter braucht man swapping, also sind die loops langsamer wegen disk/io
+    
+    Das erste Loop ist langsamer als die anderen bei einer großen Größe wegen dem anfänglichen swapping overhead.
+    -> Am Anfang sind die Seiten noch nicht im Ram, der erste Druchlauf löst daher einen page fault aus
+    -> OS muss die Seite vom Disk-Swap nachladen, evtl Seiten rauswerfen, TLB und Page Table aktualsieiren
+    -> Spätere Loops treffen dann auf seiten, die schon im ram oder im swap-cache liegen.
+
+
+6.Swap space isn’t infinite. You can use the tool swapon with the -s flag to see how much swap space is available. What happens if you try to run mem with increasingly large values, beyond what seems to be available in swap? At what point does the memory allocation fail?
+
+    Mit 2 GB swap sapce:
+    16000 ist schon fehlgeschlagen
+
+
+    
 
