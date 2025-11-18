@@ -61,5 +61,20 @@ space with the -u flag. For example:
 What happens as you increase the percentage of pages that are allocated in each address space?
 
 
+    -u bedeutet, wie viel prozent des virtuellen Adressraums tatsächlich belegt wird
+
+    Wenn wir u sehr hoch einstellen, kriegen wir weniger invalid virtuelle adressen, da der zugriff zu auf eine virtuelle adresse zu 100% erfolgreich ist
+    Wenn u sehr niedrig ist, heisst das, dass auch wenig virtueller Speicherraum vom Programm genutzt wird. Die Ws.keit ist höher, dass wir invalid adressen bekommen
 
 
+3. Now let’s try some different random seeds, and some different (and
+sometimes quite crazy) address-space parameters, for variety:
+-P 8 -a 32 -p 1024 -v -s 1
+-P 8k -a 32k -p 1m -v -s 2
+-P 1m -a 256m -p 512m -v -s 3
+Which of these parameter combinations are unrealistic? Why?
+
+
+Drittes Bsp: -P page size ist 1m, das ist viel zu groß.
+    -> Wenn Seiten riesig sind, wird beim Laden einer kleinen Variable gleich ein ganzes MB Block in Ram gebracht -> viel verschwendeter Speicher 
+    
