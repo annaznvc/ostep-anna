@@ -1,5 +1,125 @@
 1.Generate random addresses with the following arguments: -s 0 -n 10, -s 1 -n 10, and -s 2 -n 10. Change the policy from FIFO, to LRU, to OPT. Compute whether each access in said address traces are hits or misses.
 
-2.Generate random addresses with the following arguments: -s 0 -n 10, -s 1 -n 10, and -s 2 -n 10. Change the policy from FIFO, to LRU, to OPT. Compute whether each access in said address traces are hits or misses.
+2. For a cache of size 5, generate worst-case address reference streams for each of the following policies: FIFO, LRU, and MRU (worst-case reference streams cause the most misses possible. For the worst case reference streams, how much bigger of a cache is needed to improve performance dramatically and approach OPT?
 
-3.
+    FIFO worst case: Eine Adressfolge mit 6 unterschiedlichen Seiten, dann wiederholen -> jedes mal ein miss
+    LRU worst case: Eine Adressfolge mit 6 unterschiedlichen Seiten wiederholen ->
+        Access: 0  MISS LRU ->          [0] <- MRU Replaced:- [Hits:0 Misses:1]
+        Access: 1  MISS LRU ->       [0, 1] <- MRU Replaced:- [Hits:0 Misses:2]
+        Access: 2  MISS LRU ->    [0, 1, 2] <- MRU Replaced:- [Hits:0 Misses:3]
+        Access: 3  MISS LRU -> [0, 1, 2, 3] <- MRU Replaced:- [Hits:0 Misses:4]
+        Access: 4  MISS LRU -> [0, 1, 2, 3, 4] <- MRU Replaced:- [Hits:0 Misses:5]
+        Access: 5  MISS LRU -> [1, 2, 3, 4, 5] <- MRU Replaced:0 [Hits:0 Misses:6]
+        Access: 0  MISS LRU -> [2, 3, 4, 5, 0] <- MRU Replaced:1 [Hits:0 Misses:7]
+        Access: 1  MISS LRU -> [3, 4, 5, 0, 1] <- MRU Replaced:2 [Hits:0 Misses:8]
+        Access: 2  MISS LRU -> [4, 5, 0, 1, 2] <- MRU Replaced:3 [Hits:0 Misses:9]
+        Access: 3  MISS LRU -> [5, 0, 1, 2, 3] <- MRU Replaced:4 [Hits:0 Misses:10]
+        Access: 4  MISS LRU -> [0, 1, 2, 3, 4] <- MRU Replaced:5 [Hits:0 Misses:11]
+        Access: 5  MISS LRU -> [1, 2, 3, 4, 5] <- MRU Replaced:0 [Hits:0 Misses:12]
+
+    MRU worst case: Eine Adressfolge mit 6 unterschieden Seite, danach die letzten 2 seiten in einer srquenz wiederholen  
+        Access: 0  MISS LRU ->          [0] <- MRU Replaced:- [Hits:0 Misses:1]
+        Access: 1  MISS LRU ->       [0, 1] <- MRU Replaced:- [Hits:0 Misses:2]
+        Access: 2  MISS LRU ->    [0, 1, 2] <- MRU Replaced:- [Hits:0 Misses:3]
+        Access: 3  MISS LRU -> [0, 1, 2, 3] <- MRU Replaced:- [Hits:0 Misses:4]
+        Access: 4  MISS LRU -> [0, 1, 2, 3, 4] <- MRU Replaced:- [Hits:0 Misses:5]
+        Access: 5  MISS LRU -> [0, 1, 2, 3, 5] <- MRU Replaced:4 [Hits:0 Misses:6]
+        Access: 6  MISS LRU -> [0, 1, 2, 3, 6] <- MRU Replaced:5 [Hits:0 Misses:7]
+        Access: 5  MISS LRU -> [0, 1, 2, 3, 5] <- MRU Replaced:6 [Hits:0 Misses:8]
+        Access: 6  MISS LRU -> [0, 1, 2, 3, 6] <- MRU Replaced:5 [Hits:0 Misses:9]
+        Access: 5  MISS LRU -> [0, 1, 2, 3, 5] <- MRU Replaced:6 [Hits:0 Misses:10]
+        Access: 6  MISS LRU -> [0, 1, 2, 3, 6] <- MRU Replaced:5 [Hits:0 Misses:11]
+        Access: 5  MISS LRU -> [0, 1, 2, 3, 5] <- MRU Replaced:6 [Hits:0 Misses:12]
+        Access: 6  MISS LRU -> [0, 1, 2, 3, 6] <- MRU Replaced:5 [Hits:0 Misses:13]
+
+
+
+3. Generate a random trace (use python or perl). How would you
+expect the different policies to perform on such a trace?
+
+    ./paging-policy.py -s 0 -n 10 -c
+    FINALSTATS hits 1   misses 9   hitrate 10.00
+
+    ./paging-policy.py -s 0 -n 10 -c --policy=LRU
+    FINALSTATS hits 2   misses 8   hitrate 20.00
+
+    ./paging-policy.py -s 0 -n 10 -c --policy=OPT
+    FINALSTATS hits 4   misses 6   hitrate 40.00
+
+    ./paging-policy.py -s 0 -n 10 -c --policy=UNOPT
+    FINALSTATS hits 0   misses 10   hitrate 0.00
+
+    ./paging-policy.py -s 0 -n 10 -c --policy=RAND
+    FINALSTATS hits 0   misses 10   hitrate 0.00
+
+    ./paging-policy.py -s 0 -n 10 -c --policy=CLOCK
+    FINALSTATS hits 1   misses 9   hitrate 10.00
+
+4. Now generate a trace with some locality. How can you generate
+such a trace? How does LRU perform on it? How much better than
+RAND is LRU? How does CLOCK do? How about CLOCK with
+different numbers of clock bits?
+
+	eine 80-20 verteilung ist sinnvoll
+ ./paging-policy.py   --addresses=1,2,3,4,1,2,3,4,1,2,3,4,99,1,2,3,4,1,2,3,4,100,1,2,3,4   --policy=LRU   --cachesize=5   -c
+
+	LRU: je kleiner der cache, desto höher die Miss rate. Bei kleinem Cache miserabel
+	RAND: Etwas besser bei kleinem Cache manchmal, weniger misses
+	CLOCK: erheblich besser auch bei kleinem cache, aber schlechter als lru bei größerem cache
+	CLockBITS= etwas besser als normaler clock
+
+5. Use a program like valgrind to instrument a real application and
+generate a virtual page reference stream. For example, running
+valgrind --tool=lackey --trace-mem=yes ls will output
+a nearly-complete reference trace of every instruction and data reference made by the program ls. To make this useful for the simulator above, you’ll have to first transform each virtual memory
+reference into a virtual page-number reference (done by masking
+off the offset and shifting the resulting bits downward). How big
+of a cache is needed for your application trace in order to satisfy a
+large fraction of requests? Plot a graph of its working set as the size
+of the cache increases.
+
+Zuerst alles in die Datei trace.txt leiten
+valgrind --tool=lackey --trace-mem=yes ls 2> trace.txt
+
+
+
+Danach umwandeln:
+
+python3 - << 'EOF'
+import re
+out = open("pages.txt", "w")
+with open("trace.txt") as f:
+    for line in f:
+        m = re.search(r'[ISD]\s+([0-9A-Fa-f]+)', line)
+        if m:
+            addr = int(m.group(1), 16)
+            page = addr >> 12
+            out.write(str(page) + "\n")
+EOF
+
+
+Danach in den SImulator:
+./paging-policy.py --addressfile=pages.txt --policy=LRU --cachesize=100 -c
+
+Size 100:
+FINALSTATS hits 454983   misses 175   hitrate 99.96
+
+Size 50:
+FINALSTATS hits 454913   misses 245   hitrate 99.95
+
+Size 25:
+FINALSTATS hits 454717   misses 441   hitrate 99.90
+
+Size 10:
+FINALSTATS hits 453852   misses 1306   hitrate 99.71
+
+Size 2:
+FINALSTATS hits 439884   misses 15274   hitrate 96.64
+
+
+FIFO schneidet schlecht ab:
+Size 100:
+FINALSTATS hits 454584   misses 574   hitrate 99.87
+
+
+
