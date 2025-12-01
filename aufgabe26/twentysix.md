@@ -41,14 +41,14 @@ gleichzusetzen mit:
 halt();
 
 ```
-
+```
 dx          Thread 0
     0
     -1   1000 sub  $1,%dx
     -1   1001 test $0,%dx
     -1   1002 jgte .top
     -1   1003 halt
-
+```
 
 >2. Same code, different flags: (./x86.py -p loop.s -t 2 -i 100
 -a dx=3,dx=3 -R dx) This specifies two threads, and initializes
