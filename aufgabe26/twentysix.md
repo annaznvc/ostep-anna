@@ -240,3 +240,37 @@ wait-for-me.s -a ax=1,ax=0 -R ax -M 2000 This sets the
 and memory location 2000. How should the code behave? How is
 the value at location 2000 being used by the threads? What will its
 final value be?
+
+```
+2000      ax          Thread 0                Thread 1
+    0       1
+    0       1   1000 test $1, %ax
+    0       1   1001 je .signaller
+    1       1   1006 mov  $1, 2000
+    1       1   1007 halt
+    1       0   ----- Halt;Switch -----  ----- Halt;Switch -----
+    1       0                            1000 test $1, %ax
+    1       0                            1001 je .signaller
+    1       0                            1002 mov  2000, %cx
+    1       0                            1003 test $1, %cx
+    1       0                            1004 jne .waiter
+    1       0                            1005 halt
+
+``` 
+
+- Thread 0 ist Signaler und setzt Memory 2000 = 1
+- Thread 1 ist Waiter und wartet, bis Memory 2000 = 1
+- Adresse 2000 dient als einfaches Synchronisations-Flag
+- Finaler Wert in Memory 2000 ist 1
+
+> 10. Now switch the inputs: ./x86.py -p wait-for-me.s -a
+ax=0,ax=1 -R ax -M 2000 How do the threads behave? What
+is thread 0 doing? How would changing the interrupt interval (e.g.,
+-i 1000, or perhaps to use random intervals) change the trace outcome? Is the program efficiently using the CPU?
+
+- Thread 0 läuft in einer endlosen busy-wait-schleife, unnötige CPU Belegung
+- Thread 1 erst gestratett wenn der Scheduler umschaltet
+- mit großem interrupt intervall wird thread 0 extrem lange laufen.
+
+
+
