@@ -38,3 +38,13 @@ int main(int argc, char *argv[]) {
 - Konflikt 1: main liest balance während worker balance schreibt
 
 - Konflikt 2: main schreibt balance während worker balance schreibt
+
+
+>2. What happens when you remove one of the offending lines of code?
+Now add a lock around one of the updates to the shared variable,
+and then around both. What does helgrind report in each of these
+cases?
+
+
+- Wenn man problematischen code rausnimmt, dann meldet helgrind nichts
+- 
