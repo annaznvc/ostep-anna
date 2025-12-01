@@ -41,7 +41,7 @@ gleichzusetzen mit:
 halt();
 
 ```
-##Lösung Aufgabe:
+## Lösung Aufgabe:
 ```
 dx          Thread 0
     0
@@ -98,5 +98,10 @@ different seeds (-s) to see different interleavings. Does the interrupt frequenc
 
 - Nach jeder ausgeführten Instruktion entscheidet -r zufällig, ob ein Interrupt passiert oder nicht. 
 - Interleaving wird komplett zufällig.
+- Der Zustand des Registerwerts dx ist nicht deterministisch.
 
 
+
+>4. Now, a different program, looping-race-nolock.s, which accesses a shared variable located at address 2000; we’ll call this variable value. Run it with a single thread to confirm your understanding: ./x86.py -p looping-race-nolock.s -t 1 -M
+2000 What is value (i.e., at memory address 2000) throughout the
+run? Use -c to check.
