@@ -4,11 +4,12 @@ will %dx be during the run? Use the -c flag to check your answers;
 the answers, on the left, show the value of the register (or memory
 value) after the instruction on the right has run
 
-'''
+
+```
 .main
 .top
 sub  $1,%dx      ; DX = DX - 1
 test $0,%dx      ; setzt Flags entsprechend DX
 jgte .top        ; springe zu .top, wenn DX >= 0
 halt
-'''
+```
